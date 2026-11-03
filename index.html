@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Fresh Bowl - Salad Bar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: #1b5e20;
+        }
+        p {
+            margin-top: 0;
+            color: #66bb6a;
+            font-weight: 600;
+        }
+        .score-board {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            background: #c8e6c9;
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            font-weight: 600;
+        }
+        .order-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            border-radius: 10px;
+        }
+        .order-section h3 {
+            margin: 0 0 10px 0;
+            color: #e65100;
+        }
+        #customer-order {
+            font-size: 2.5rem;
+            letter-spacing: 10px;
+        }
+        .bar-station {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .ingredient-btn {
+            background: #ffffff;
+            border: 2px solid #81c784;
+            border-radius: 15px;
+            font-size: 3rem;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .ingredient-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.3);
+            background: #f1f8e9;
+        }
+        .ingredient-btn:active {
+            transform: scale(0.95);
+        }
+        .plate-section {
+            margin-bottom: 30px;
+        }
+        .plate {
+            width: 100%;
+            min-height: 100px;
+            background: #f5f5f5;
+            border: 3px dashed #bdbdbd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto;
+            letter-spacing: -5px;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        button.action-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+        }
+        .serve-btn {
+            background-color: #4caf50;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+        .serve-btn:hover { background-color: #388e3c; }
+        .trash-btn {
+            background-color: #ef5350;
+            box-shadow: 0 4px 15px rgba(239, 83, 80, 0.4);
+        }
+        .trash-btn:hover { background-color: #d32f2f; }
+        
+        #message {
+            margin-top: 20px;
+            font-weight: 600;
+            min-height: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🥗 The Fresh Bowl</h1>
+        <p>Premium Salad Bar</p>
+
+        <div class="score-board">
+            Score: <span id="score">0</span>
+        </div>
+
+        <div class="order-section">
+            <h3>Customer Order:</h3>
+            <div id="customer-order"></div>
+        </div>
+
+        <div class="plate-section">
+            <h3>Your Bowl:</h3>
+            <div class="plate" id="plate"></div>
+        </div>
+
+        <h3>Ingredients Station</h3>
+        <div class="bar-station">
+            <button class="ingredient-btn" onclick="addIngredient('🥬')" title="Lettuce">🥬</button>
+            <button class="ingredient-btn" onclick="addIngredient('🍅')" title="Tomato">🍅</button>
+            <button class="ingredient-btn" onclick="addIngredient('🥒')" title="Cucumber">🥒</button>
+            <button class="ingredient-btn" onclick="addIngredient('🥕')" title="Carrot">🥕</button>
+            <button class="ingredient-btn" onclick="addIngredient('🌽')" title="Corn">🌽</button>
+            <button class="ingredient-btn" onclick="addIngredient('🧀')" title="Cheese">🧀</button>
+        </div>
+
+        <div class="actions">
+            <button class="action-btn trash-btn" onclick="clearPlate()">🗑️ Clear Bowl</button>
+            <button class="action-btn serve-btn" onclick="serveSalad()">🔔 Serve Order</button>
+        </div>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        const ingredients = ['🥬', '🍅', '🥒', '🥕', '🌽', '🧀'];
+        let currentOrder = [];
+        let currentPlate = [];
+        let score = 0;
+
+        function generateOrder() {
+            currentOrder = [];
+            // Random order length between 2 and 4 ingredients
+            const orderSize = Math.floor(Math.random() * 3) + 2; 
+            for(let i = 0; i < orderSize; i++) {
+                const randomIngredient = ingredients[Math.floor(Math.random() * ingredients.length)];
+                currentOrder.push(randomIngredient);
+            }
+            document.getElementById('customer-order').innerText = currentOrder.join(' ');
+            clearPlate();
+            showMessage("New customer is waiting...", "#ff9800");
+        }
+
+        function addIngredient(item) {
+            if(currentPlate.length < 6) {
+                currentPlate.push(item);
+                document.getElementById('plate').innerText = currentPlate.join(' ');
+            }
+        }
+
+        function clearPlate() {
+            currentPlate = [];
+            document.getElementById('plate').innerText = "";
+        }
+
+        function showMessage(msg, color) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.innerText = msg;
+            msgDiv.style.color = color;
+        }
+
+        function serveSalad() {
+            if(currentPlate.length === 0) {
+                showMessage("The bowl is empty! Add ingredients first.", "#ef5350");
+                return;
+            }
+
+            // Sort both arrays to compare them regardless of the order they were added
+            const sortedOrder = [...currentOrder].sort().join('');
+            const sortedPlate = [...currentPlate].sort().join('');
+
+            if(sortedOrder === sortedPlate) {
+                score += 10;
+                document.getElementById('score').innerText = score;
+                showMessage("Perfect! Delicious salad. +10 Points!", "#388e3c");
+                setTimeout(generateOrder, 1500); // Next order after 1.5 seconds
+            } else {
+                showMessage("Oops! That's not what the customer ordered. Try again.", "#d32f2f");
+                clearPlate();
+            }
+        }
+
+        // Start the game
+        generateOrder();
+    </script>
+</body>
+</html>
